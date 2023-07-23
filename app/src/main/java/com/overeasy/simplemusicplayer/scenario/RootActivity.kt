@@ -1,5 +1,6 @@
 package com.overeasy.simplemusicplayer.scenario
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,7 +11,10 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class RootActivity : ComponentActivity() {
-    val viewModel: RootViewModel by viewModels()
+    private val viewModel: RootViewModel by viewModels()
+    private val mediaPlayer by lazy {
+        MediaPlayer()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +32,8 @@ class RootActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             RootNavHost(
-                navController = navController
+                navController = navController,
+                mediaPlayer = mediaPlayer
             )
         }
     }
