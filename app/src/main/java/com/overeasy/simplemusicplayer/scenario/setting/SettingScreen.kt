@@ -7,5 +7,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun SettingScreen(
     viewModel: SettingViewModel = hiltViewModel()
 ) {
+    // 블랙 & 화이트 전환
 
 }
