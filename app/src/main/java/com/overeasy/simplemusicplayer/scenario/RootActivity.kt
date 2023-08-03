@@ -1,19 +1,17 @@
 package com.overeasy.simplemusicplayer.scenario
 
-import android.media.AudioManager
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer.Builder
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.overeasy.simplemusicplayer.R
 import com.overeasy.simplemusicplayer.appConfig.MainApplication
-import com.overeasy.simplemusicplayer.mediaPlayer.MediaPlayerManager
 import com.overeasy.simplemusicplayer.ui.SimpleMusicPlayerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,7 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class RootActivity : ComponentActivity() {
     private val viewModel: RootViewModel by viewModels()
 
-    private lateinit var mediaPlayerManager: MediaPlayerManager
+//    private lateinit var mediaPlayerManager: MediaPlayerManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,18 +28,7 @@ class RootActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
 
-        mediaPlayerManager = MediaPlayerManager(
-            contentResolver = contentResolver,
-            lifecycleScope = lifecycleScope
-        )
-
         initUI()
-    }
-
-    override fun onStop() {
-        super.onStop()
-
-        mediaPlayerManager.release()
     }
 
     private fun initUI() {
@@ -52,11 +39,11 @@ class RootActivity : ComponentActivity() {
             val isDarkTheme = MainApplication.appPreference.isDarkTheme
 
             SimpleMusicPlayerTheme(
-                darkTheme = isDarkTheme
+                darkTheme = false
             ) {
                 RootNavHost(
                     navController = navController,
-                    mediaPlayerManager = mediaPlayerManager
+//                    mediaPlayerManager = mediaPlayerManager
                 )
             }
 

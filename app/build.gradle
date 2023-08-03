@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.overeasy.simplemusicplayer"
-        minSdk 23
+        minSdk 28
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -73,6 +73,23 @@ dependencies {
     implementation 'com.google.accompanist:accompanist-insets:0.24.7-alpha'
     implementation 'com.google.accompanist:accompanist-systemuicontroller:0.24.7-alpha'
     implementation "com.google.accompanist:accompanist-permissions:0.24.9-beta"
+
+    // ExoPlayer
+//    implementation 'com.google.android.exoplayer:exoplayer-core:2.19.0'
+    implementation 'androidx.media3:media3-exoplayer:1.1.0'
+
+    // Room
+    def room_version = "2.5.2"
+
+    // support for Apple silicon build
+    kapt "org.xerial:sqlite-jdbc:3.34.0"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation "androidx.room:room-ktx:$room_version"
+    implementation "androidx.room:room-rxjava2:$room_version"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

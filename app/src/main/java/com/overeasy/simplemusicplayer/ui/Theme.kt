@@ -19,11 +19,13 @@ import com.overeasy.simplemusicplayer.R
 
 private val DarkColorPalette = darkColors(
     primary = Color.Black,
+    primaryVariant = Color.Gray,
     secondary = Color.White
 )
 
 private val LightColorPalette = lightColors(
     primary = Color.White,
+    primaryVariant = Color.Gray,
     secondary = Color.Black
 )
 
