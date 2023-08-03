@@ -10,8 +10,7 @@ import com.overeasy.simplemusicplayer.scenario.setting.SettingScreen
 
 @Composable
 fun RootNavHost(
-    navController: NavHostController,
-//    mediaPlayerManager: MediaPlayerManager
+    navController: NavHostController
 ) {
     NavHost(
         navController = navController,
@@ -19,7 +18,9 @@ fun RootNavHost(
     ) {
         composable(RootRoutes.Player.route) {
             PlayerScreen(
-//                mediaPlayerManager = mediaPlayerManager
+                onClickSetting = {
+                    navController.navigate(RootRoutes.Setting.route)
+                }
             )
         }
         composable(RootRoutes.Setting.route) {

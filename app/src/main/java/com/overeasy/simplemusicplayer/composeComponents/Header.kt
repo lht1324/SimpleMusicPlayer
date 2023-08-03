@@ -35,7 +35,9 @@ fun Header(
                 .fillMaxWidth()
         ) {
             Box(
-                modifier = Modifier.align(Alignment.CenterStart)
+                modifier = Modifier
+                    .padding(start = 18.dp)
+                    .align(Alignment.CenterStart)
             ) {
                 startContent()
             }
@@ -43,12 +45,14 @@ fun Header(
                 text = title,
                 modifier = Modifier.align(Alignment.Center),
                 color = MaterialTheme.colors.secondary,
-                fontSize = 16.dpToSp(),
+                fontSize = 30.dpToSp(),
                 fontWeight = FontWeight.Bold,
                 fontFamily = fontFamily
             )
             Box(
-                modifier = Modifier.align(Alignment.CenterEnd)
+                modifier = Modifier
+                    .padding(end = 18.dp)
+                    .align(Alignment.CenterEnd)
             ) {
                 endContent()
             }

@@ -34,8 +34,8 @@ open class BaseAppPreference(
         return sharedPreferences.getString(key, null)
     }
 
-    protected fun getIntData(key: String): Int {
-        return sharedPreferences.getInt(key, Int.MIN_VALUE)
+    protected fun getIntData(key: String, defaultValue: Int = Int.MIN_VALUE): Int {
+        return sharedPreferences.getInt(key, defaultValue)
     }
 
     protected fun getFloatData(key: String): Float {

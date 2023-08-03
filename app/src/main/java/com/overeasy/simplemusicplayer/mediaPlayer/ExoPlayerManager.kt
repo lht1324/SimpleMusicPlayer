@@ -18,6 +18,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.ExoPlayer.Builder
+import com.overeasy.simplemusicplayer.model.LoopType
 import com.overeasy.simplemusicplayer.room.entity.MusicData
 import java.io.File
 import java.io.IOException
@@ -95,6 +96,10 @@ class ExoPlayerManager @Inject constructor(
     fun release() {
         exoPlayer?.release()
         exoPlayer = null
+    }
+
+    fun setLoopType(loopType: LoopType) {
+        exoPlayer?.repeatMode = loopType.value
     }
 
     private fun scanMusicFiles(): List<MusicData> = getContentResolverQueryCursor()?.run {

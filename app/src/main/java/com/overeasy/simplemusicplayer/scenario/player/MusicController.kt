@@ -19,10 +19,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.AbsoluteRoundedCornerShape
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,8 +33,12 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.overeasy.simplemusicplayer.composeComponents.dpToSp
 import com.overeasy.simplemusicplayer.composeComponents.noRippleClickable
+import com.overeasy.simplemusicplayer.model.LoopType
+import com.overeasy.simplemusicplayer.ui.fontFamily
 import kotlinx.coroutines.delay
 
 @Composable
@@ -40,6 +46,8 @@ fun MusicController(
     modifier: Modifier = Modifier,
     isPlaying: Boolean,
     progress: Float,
+    loopType: LoopType,
+    onClickRepeat: () -> Unit,
     onClickPrevious: () -> Unit,
     onClickPlay: () -> Unit,
     onClickNext: () -> Unit,
@@ -62,12 +70,16 @@ fun MusicController(
             progress = progress,
             onProgressBarDragged = onProgressBarDragged
         )
+        Spacer(modifier = Modifier.height(20.dp))
         Buttons(
             isPlaying = isPlaying,
+            loopType = loopType,
+            onClickRepeat = onClickRepeat,
             onClickPrevious = onClickPrevious,
             onClickPlay = onClickPlay,
             onClickNext = onClickNext
         )
+        Spacer(modifier = Modifier.height(30.dp))
     }
 }
 
@@ -83,7 +95,6 @@ private fun ProgressBar(
     var delta by remember { mutableStateOf(0.0f) }
     var isDragging by remember { mutableStateOf(false )}
     var currentProgress by remember { mutableStateOf(0f) }
-//    var buttonOffsetX by remember { mutableStateOf(0.dp) }
     val buttonOffsetX by remember {
         derivedStateOf {
             (currentProgress * progressBarWidth.toFloat()).dp
@@ -162,29 +173,39 @@ private fun ProgressBar(
 private fun Buttons(
     modifier: Modifier = Modifier,
     isPlaying: Boolean,
+    loopType: LoopType,
+    onClickRepeat: () -> Unit,
     onClickPrevious: () -> Unit,
     onClickPlay: () -> Unit,
     onClickNext: () -> Unit
 ) {
-    Row(
-        modifier = modifier
-            .padding(vertical = 30.dp, horizontal = 24.dp)
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+    Column(
+        modifier = modifier.padding(horizontal = 24.dp)
     ) {
-        ProgressButton(
-            isNext = true,
-            onClick = onClickPrevious
+        RepeatButton(
+            modifier = Modifier.align(Alignment.End),
+            loopType = loopType,
+            onClick = onClickRepeat
         )
-        PlayButton(
-            isPlaying = isPlaying,
-            onClick = onClickPlay
-        )
-        ProgressButton(
-            isNext = false,
-            onClick = onClickNext
-        )
+        Spacer(modifier = Modifier.padding(vertical = 10.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            ProgressButton(
+                isNext = true,
+                onClick = onClickPrevious
+            )
+            PlayButton(
+                isPlaying = isPlaying,
+                onClick = onClickPlay
+            )
+            ProgressButton(
+                isNext = false,
+                onClick = onClickNext
+            )
+        }
     }
 }
 
@@ -211,6 +232,40 @@ private fun DefaultButton(
         contentAlignment = Alignment.Center
     ) {
         content()
+    }
+}
+
+@Composable
+private fun RepeatButton(
+    modifier: Modifier = Modifier,
+    loopType: LoopType,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = modifier
+            .background(
+                shape = AbsoluteRoundedCornerShape(50.dp),
+                color = MaterialTheme.colors.primary
+            )
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colors.secondary,
+                shape = AbsoluteRoundedCornerShape(50.dp)
+            ).clip(shape = CircleShape)
+            .clickable(onClick = onClick)
+    ) {
+        Text(
+            text = when (loopType) {
+                LoopType.NONE -> "반복 안 함"
+                LoopType.ONLY_ONE -> "한 곡만 반복"
+                LoopType.ALL -> "전체 반복"
+            },
+            modifier = Modifier.padding(10.dp),
+            color = MaterialTheme.colors.secondary,
+            fontSize = 14.dpToSp(),
+            fontWeight = FontWeight.Bold,
+            fontFamily = fontFamily
+        )
     }
 }
 

@@ -1,21 +1,23 @@
 package com.overeasy.simplemusicplayer.scenario.player
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
+import com.overeasy.simplemusicplayer.appConfig.MainApplication.Companion.appPreference
 import com.overeasy.simplemusicplayer.mediaPlayer.ExoPlayerManager
+import com.overeasy.simplemusicplayer.model.LoopType
+import com.overeasy.simplemusicplayer.model.getLoopTypeByValue
 import com.overeasy.simplemusicplayer.room.entity.MusicData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,10 +29,9 @@ class PlayerViewModel @Inject constructor(
 
     private val _isPlayingState = mutableStateOf(false)
     val isPlayingState = _isPlayingState
-    private val _currentPositionState = mutableStateOf(0)
-    val currentPositionState = _currentPositionState
 
-    private var currentPositionUpdateJob: Job? = null
+    private val _loopType = MutableStateFlow(appPreference.loopType.getLoopTypeByValue())
+    val loopType = _loopType.asStateFlow()
 
     val progressFlow = flow {
         while(true) {
@@ -57,6 +58,12 @@ class PlayerViewModel @Inject constructor(
                 }
             }
         )
+
+        viewModelScope.launch {
+            loopType.collectLatest { type ->
+                exoPlayerManager.setLoopType(type)
+            }
+        }
     }
 
     override fun onCleared() {
@@ -84,7 +91,6 @@ class PlayerViewModel @Inject constructor(
 
         if (!isPlaying) {
             exoPlayerManager.start()
-//            startTrackingCurrentPosition()
         }
     }
 
@@ -92,10 +98,8 @@ class PlayerViewModel @Inject constructor(
         if (isPlaying) {
             exoPlayerManager.pause()
             _isPlayingState.value = false
-//            stopTrackingCurrentPosition(false)
         } else {
             exoPlayerManager.start()
-//            startTrackingCurrentPosition()
         }
     }
 
@@ -104,8 +108,6 @@ class PlayerViewModel @Inject constructor(
             exoPlayerManager.seekTo(0)
         else
             exoPlayerManager.seekToPrevious()
-
-//        stopTrackingCurrentPosition(true)
     }
 
     fun onClickNext() {
@@ -117,25 +119,15 @@ class PlayerViewModel @Inject constructor(
         exoPlayerManager.seekTo(targetPosition)
     }
 
-    private fun moveTo(milliseconds: Long) {
-        exoPlayerManager.seekTo(milliseconds)
-    }
-
-    private fun startTrackingCurrentPosition() {
-        currentPositionUpdateJob = viewModelScope.launch(Dispatchers.IO) {
-            delay(1000L)
-            _currentPositionState.value = getCurrentSecond()
-            Log.d("jaehoLee", "state = ${currentPositionState.value}")
+    fun onClickRepeat(currentLoopType: LoopType) {
+        val nextLoopType = when (currentLoopType) {
+            LoopType.NONE -> LoopType.ALL
+            LoopType.ALL -> LoopType.ONLY_ONE
+            LoopType.ONLY_ONE -> LoopType.NONE
         }
-        currentPositionUpdateJob?.start()
-    }
 
-    private fun stopTrackingCurrentPosition(isReset: Boolean) {
-        if (isReset)
-            _currentPositionState.value = 0
-
-        currentPositionUpdateJob?.cancel()
-        currentPositionUpdateJob = null
+        appPreference.loopType = nextLoopType.value
+        _loopType.value = nextLoopType
     }
 
     private fun getCurrentSecond() = (exoPlayerManager.currentPosition / 1000L).toInt()

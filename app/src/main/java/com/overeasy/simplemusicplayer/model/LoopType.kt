@@ -1,9 +1,11 @@
 package com.overeasy.simplemusicplayer.model
 
+import androidx.media3.common.Player
+
 enum class LoopType(val value: Int) {
-    NONE(0),
-    ALL(1),
-    ONLY_ONE(2)
+    NONE(Player.REPEAT_MODE_OFF),
+    ALL(Player.REPEAT_MODE_ALL),
+    ONLY_ONE(Player.REPEAT_MODE_ONE)
 }
 
 fun Int.getLoopTypeByValue() = when (this) {

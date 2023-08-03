@@ -35,7 +35,7 @@ import com.overeasy.simplemusicplayer.ui.fontFamily
 @Composable
 fun PlayerScreen(
     viewModel: PlayerViewModel = hiltViewModel(),
-//    mediaPlayerManager: MediaPlayerManager
+    onClickSetting: () -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val density = LocalDensity.current
@@ -46,6 +46,7 @@ fun PlayerScreen(
 
     val isPlaying by remember { viewModel.isPlayingState }
     val progress by viewModel.progressFlow.collectAsState(initial = 0f)
+    val loopType by viewModel.loopType.collectAsState()
     val musicDataList = remember { viewModel.musicDataList }
 
     Box(
@@ -55,8 +56,17 @@ fun PlayerScreen(
     ) {
         Column(modifier = Modifier.align(Alignment.TopCenter)) {
             Header(
-                title = "헤더",
-                doesShowDivider = true
+                doesShowDivider = true,
+                endContent = {
+                    Text(
+                        text = "설정",
+                        modifier = Modifier.clickable(onClick = onClickSetting),
+                        color = MaterialTheme.colors.secondary,
+                        fontSize = 24.dpToSp(),
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = fontFamily
+                    )
+                }
             )
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -90,6 +100,10 @@ fun PlayerScreen(
                 },
             isPlaying = isPlaying,
             progress = progress,
+            loopType = loopType,
+            onClickRepeat = {
+                viewModel.onClickRepeat(loopType)
+            },
             onClickPrevious = viewModel::onClickPrevious,
             onClickPlay = {
                 viewModel.onClickPlay(isPlaying)
