@@ -24,7 +24,9 @@ fun RootNavHost(
             )
         }
         composable(RootRoutes.Setting.route) {
-            SettingScreen()
+            SettingScreen(
+                onClickBack = navController::popBackStack
+            )
         }
     }
 }

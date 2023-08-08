@@ -29,6 +29,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.overeasy.simplemusicplayer.composeComponents.Header
 import com.overeasy.simplemusicplayer.composeComponents.dpToSp
+import com.overeasy.simplemusicplayer.composeComponents.noRippleClickable
 import com.overeasy.simplemusicplayer.room.entity.MusicData
 import com.overeasy.simplemusicplayer.ui.fontFamily
 
@@ -60,7 +61,7 @@ fun PlayerScreen(
                 endContent = {
                     Text(
                         text = "설정",
-                        modifier = Modifier.clickable(onClick = onClickSetting),
+                        modifier = Modifier.noRippleClickable(onClick = onClickSetting),
                         color = MaterialTheme.colors.secondary,
                         fontSize = 24.dpToSp(),
                         fontWeight = FontWeight.Bold,

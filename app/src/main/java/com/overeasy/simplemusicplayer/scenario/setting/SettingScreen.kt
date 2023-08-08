@@ -1,5 +1,7 @@
 package com.overeasy.simplemusicplayer.scenario.setting
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,9 +21,11 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.overeasy.simplemusicplayer.R
 import com.overeasy.simplemusicplayer.composeComponents.Header
 import com.overeasy.simplemusicplayer.composeComponents.dpToSp
 import com.overeasy.simplemusicplayer.composeComponents.noRippleClickable
@@ -29,10 +33,14 @@ import com.overeasy.simplemusicplayer.ui.fontFamily
 
 @Composable
 fun SettingScreen(
-    viewModel: SettingViewModel = hiltViewModel()
+    viewModel: SettingViewModel = hiltViewModel(),
+    onClickBack: () -> Unit
 ) {
     val isDarkTheme by viewModel.isDarkTheme.collectAsState(initial = false)
 
+    BackHandler {
+        onClickBack()
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -40,7 +48,19 @@ fun SettingScreen(
     ) {
         Header(
             title = "설정",
-            doesShowDivider = true
+            doesShowDivider = true,
+            startContent = {
+                Image(
+                    painter = painterResource(
+                        id = if (isDarkTheme)
+                            R.drawable.icon_back_arrow_white
+                        else
+                            R.drawable.icon_back_arrow_black
+                    ),
+                    modifier = Modifier.noRippleClickable(onClick = onClickBack),
+                    contentDescription = "음악 재생 화면으로 이동합니다."
+                )
+            }
         )
         Spacer(modifier = Modifier.height(20.dp))
         Column(

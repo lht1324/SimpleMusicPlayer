@@ -1,5 +1,6 @@
 package com.overeasy.simplemusicplayer.scenario.player
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -40,7 +41,7 @@ class PlayerViewModel @Inject constructor(
 
             val progress = currentPosition.toFloat() / musicDataList[currentIndex].duration.toFloat()
 
-            emit(progress.toFloat())
+            emit(progress)
             delay(1000L)
         }
     }.filter { progress ->
@@ -48,17 +49,6 @@ class PlayerViewModel @Inject constructor(
     }
 
     init {
-        exoPlayerManager.addListener(
-            object : Player.Listener {
-                override fun onIsPlayingChanged(isPlaying: Boolean) {
-                    super.onIsPlayingChanged(isPlaying)
-
-                    if (isPlaying)
-                        _isPlayingState.value = true
-                }
-            }
-        )
-
         viewModelScope.launch {
             loopType.collectLatest { type ->
                 exoPlayerManager.setLoopType(type)
@@ -73,13 +63,25 @@ class PlayerViewModel @Inject constructor(
     }
 
     fun prepare() {
-        exoPlayerManager.prepare(
-            onFinishScan = { musicDataList ->
-                _musicDataList.addAll(
-                    musicDataList
-                )
-            }
-        )
+        if (musicDataList.isEmpty()) {
+            exoPlayerManager.addListener(
+                object : Player.Listener {
+                    override fun onIsPlayingChanged(isPlaying: Boolean) {
+                        super.onIsPlayingChanged(isPlaying)
+
+                        if (isPlaying)
+                            _isPlayingState.value = true
+                    }
+                }
+            )
+            exoPlayerManager.prepare(
+                onFinishScan = { musicDataList ->
+                    _musicDataList.addAll(
+                        musicDataList
+                    )
+                }
+            )
+        }
     }
 
     fun release() {
