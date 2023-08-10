@@ -90,6 +90,9 @@ dependencies {
     // Room
     def room_version = "2.5.2"
 
+    // Dexter (Permission)
+    implementation "com.karumi:dexter:6.2.3"
+
     // support for Apple silicon build
     kapt "org.xerial:sqlite-jdbc:3.34.0"
     implementation "androidx.room:room-runtime:$room_version"

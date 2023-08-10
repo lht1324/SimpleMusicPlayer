@@ -1,12 +1,12 @@
-package com.overeasy.simplemusicplayer.scenario
+package com.overeasy.simplemusicplayer.scenario.main
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.overeasy.simplemusicplayer.model.RootRoutes
-import com.overeasy.simplemusicplayer.scenario.player.PlayerScreen
-import com.overeasy.simplemusicplayer.scenario.setting.SettingScreen
+import com.overeasy.simplemusicplayer.scenario.main.player.PlayerScreen
+import com.overeasy.simplemusicplayer.scenario.main.setting.SettingScreen
 
 @Composable
 fun RootNavHost(

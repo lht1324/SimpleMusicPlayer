@@ -1,4 +1,4 @@
-package com.overeasy.simplemusicplayer.scenario.player
+package com.overeasy.simplemusicplayer.scenario.main.player
 
 import android.util.Log
 import androidx.compose.foundation.background

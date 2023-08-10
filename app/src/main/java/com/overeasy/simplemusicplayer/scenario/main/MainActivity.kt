@@ -1,4 +1,4 @@
-package com.overeasy.simplemusicplayer.scenario
+package com.overeasy.simplemusicplayer.scenario.main
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,8 +13,8 @@ import com.overeasy.simplemusicplayer.ui.SimpleMusicPlayerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class RootActivity : ComponentActivity() {
-    private val viewModel: RootViewModel by viewModels()
+class MainActivity : ComponentActivity() {
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onStart() {
         super.onStart()

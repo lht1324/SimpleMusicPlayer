@@ -52,20 +52,21 @@ class ExoPlayerManager @Inject constructor(
     }
 
     fun prepare(
-        onFinishScan: (List<MusicData>) -> Unit
+        mediaItemList: List<MediaItem>
     ) {
-        scanMusicFiles().sortedWith(
-            compareBy(Collator.getInstance(Locale.getDefault())) { musicData ->
-                musicData.name
-            }
-        ).let { musicDataList ->
-            exoPlayer?.setMediaItems(
-                musicDataList.map { musicData ->
-                    MediaItem.fromUri(musicData.path.toUri())
-                }
-            )
-            onFinishScan(musicDataList)
-        }
+//        scanMusicFiles().sortedWith(
+//            compareBy(Collator.getInstance(Locale.getDefault())) { musicData ->
+//                musicData.name
+//            }
+//        ).let { musicDataList ->
+//            exoPlayer?.setMediaItems(
+//                musicDataList.map { musicData ->
+//                    MediaItem.fromUri(musicData.path.toUri())
+//                }
+//            )
+//            onFinishScan(musicDataList)
+//        }
+        exoPlayer?.setMediaItems(mediaItemList)
         exoPlayer?.prepare()
     }
 

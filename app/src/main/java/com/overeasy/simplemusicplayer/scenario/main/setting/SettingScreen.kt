@@ -1,4 +1,4 @@
-package com.overeasy.simplemusicplayer.scenario.setting
+package com.overeasy.simplemusicplayer.scenario.main.setting
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image

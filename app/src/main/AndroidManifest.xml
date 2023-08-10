@@ -21,7 +21,12 @@
         android:theme="@style/Theme.SimpleMusicPlayer">
 
         <activity
-            android:name=".scenario.RootActivity"
+            android:name=".scenario.main.MainActivity"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".scenario.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

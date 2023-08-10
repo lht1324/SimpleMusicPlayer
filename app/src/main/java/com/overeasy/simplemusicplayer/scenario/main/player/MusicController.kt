@@ -1,4 +1,4 @@
-package com.overeasy.simplemusicplayer.scenario.player
+package com.overeasy.simplemusicplayer.scenario.main.player
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -91,13 +91,15 @@ private fun ProgressBar(
 ) {
     val density = LocalDensity.current
 
-    val progressBarWidth = LocalConfiguration.current.screenWidthDp - 48
+    val parentHorizontalPadding = 48
+    val progressButtonWidth = 10
+    val progressBarWidth = LocalConfiguration.current.screenWidthDp - (parentHorizontalPadding + progressButtonWidth)
     var delta by remember { mutableStateOf(0.0f) }
     var isDragging by remember { mutableStateOf(false )}
     var currentProgress by remember { mutableStateOf(0f) }
     val buttonOffsetX by remember {
         derivedStateOf {
-            (currentProgress * progressBarWidth.toFloat()).dp
+            (currentProgress * (progressBarWidth).toFloat()).dp
         }
     }
 
@@ -257,8 +259,8 @@ private fun RepeatButton(
         Text(
             text = when (loopType) {
                 LoopType.NONE -> "반복 안 함"
-                LoopType.ONLY_ONE -> "한 곡만 반복"
-                LoopType.ALL -> "전체 반복"
+                LoopType.ONLY_ONE -> "이 노래만 반복"
+                LoopType.ALL -> "모든 노래 반복"
             },
             modifier = Modifier.padding(10.dp),
             color = MaterialTheme.colors.secondary,

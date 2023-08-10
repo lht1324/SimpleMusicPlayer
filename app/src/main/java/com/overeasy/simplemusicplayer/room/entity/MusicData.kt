@@ -8,6 +8,5 @@ data class MusicData(
     @PrimaryKey val id: Long,
     val name: String,
     val duration: Long,
-    val path: String,
-    val index: Int = -1
+    val path: String
 )

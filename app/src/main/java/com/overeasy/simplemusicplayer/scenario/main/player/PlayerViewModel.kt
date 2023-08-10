@@ -1,15 +1,19 @@
-package com.overeasy.simplemusicplayer.scenario.player
+package com.overeasy.simplemusicplayer.scenario.main.player
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import com.overeasy.simplemusicplayer.appConfig.MainApplication.Companion.appPreference
 import com.overeasy.simplemusicplayer.mediaPlayer.ExoPlayerManager
 import com.overeasy.simplemusicplayer.model.LoopType
 import com.overeasy.simplemusicplayer.model.getLoopTypeByValue
+import com.overeasy.simplemusicplayer.room.dao.MusicDataDao
 import com.overeasy.simplemusicplayer.room.entity.MusicData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -18,12 +22,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.text.Collator
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
-    private val exoPlayerManager: ExoPlayerManager
+    private val exoPlayerManager: ExoPlayerManager,
+    private val musicDataDao: MusicDataDao
 ) : ViewModel() {
     private val _musicDataList = mutableStateListOf<MusicData>()
     val musicDataList = _musicDataList
@@ -34,16 +42,21 @@ class PlayerViewModel @Inject constructor(
     private val _loopType = MutableStateFlow(appPreference.loopType.getLoopTypeByValue())
     val loopType = _loopType.asStateFlow()
 
+    private val temp = snapshotFlow {
+
+    }
     val progressFlow = flow {
         while(true) {
             val currentPosition = exoPlayerManager.currentPosition
             val currentIndex = exoPlayerManager.currentIndex
 
-            val progress = currentPosition.toFloat() / musicDataList[currentIndex].duration.toFloat()
-
-            emit(progress)
-            delay(1000L)
+            emit(currentPosition to currentIndex)
+            delay(100L)
         }
+    }.filter {
+        musicDataList.isNotEmpty()
+    }.map { (currentPosition, currentIndex) ->
+        currentPosition.toFloat() / musicDataList[currentIndex].duration.toFloat()
     }.filter { progress ->
         !progress.toString().contains("E") && progress in 0.0f..1.0f
     }
@@ -63,24 +76,32 @@ class PlayerViewModel @Inject constructor(
     }
 
     fun prepare() {
-        if (musicDataList.isEmpty()) {
-            exoPlayerManager.addListener(
-                object : Player.Listener {
-                    override fun onIsPlayingChanged(isPlaying: Boolean) {
-                        super.onIsPlayingChanged(isPlaying)
+        viewModelScope.launch {
+            if (musicDataList.isEmpty()) {
+                exoPlayerManager.addListener(
+                    object : Player.Listener {
+                        override fun onIsPlayingChanged(isPlaying: Boolean) {
+                            super.onIsPlayingChanged(isPlaying)
 
-                        if (isPlaying)
-                            _isPlayingState.value = true
+                            if (isPlaying)
+                                _isPlayingState.value = true
+                        }
                     }
-                }
-            )
-            exoPlayerManager.prepare(
-                onFinishScan = { musicDataList ->
-                    _musicDataList.addAll(
-                        musicDataList
-                    )
-                }
-            )
+                )
+
+                val dataList = musicDataDao.getAll().sortedWith(
+                    compareBy(Collator.getInstance(Locale.getDefault())) { musicData ->
+                        musicData.name
+                    }
+                )
+
+                exoPlayerManager.prepare(
+                    mediaItemList = dataList.map { musicData ->
+                        MediaItem.fromUri(musicData.path.toUri())
+                    }
+                )
+                _musicDataList.addAll(dataList)
+            }
         }
     }
 
