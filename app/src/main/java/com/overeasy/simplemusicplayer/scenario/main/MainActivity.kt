@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
             SimpleMusicPlayerTheme(
                 darkTheme = isDarkTheme
             ) {
-                RootNavHost(
+                MainNavHost(
                     navController = navController
                 )
             }

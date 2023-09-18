@@ -3,7 +3,6 @@ package com.overeasy.simplemusicplayer.scenario.main.player
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshotFlow
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,6 +32,17 @@ class PlayerViewModel @Inject constructor(
     private val exoPlayerManager: ExoPlayerManager,
     private val musicDataDao: MusicDataDao
 ) : ViewModel() {
+    private val isPlayingListener by lazy {
+        object : Player.Listener {
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                super.onIsPlayingChanged(isPlaying)
+
+                if (isPlaying)
+                    _isPlayingState.value = true
+            }
+        }
+    }
+
     private val _musicDataList = mutableStateListOf<MusicData>()
     val musicDataList = _musicDataList
 
@@ -42,9 +52,6 @@ class PlayerViewModel @Inject constructor(
     private val _loopType = MutableStateFlow(appPreference.loopType.getLoopTypeByValue())
     val loopType = _loopType.asStateFlow()
 
-    private val temp = snapshotFlow {
-
-    }
     val progressFlow = flow {
         while(true) {
             val currentPosition = exoPlayerManager.currentPosition
@@ -69,25 +76,10 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-
-        exoPlayerManager.release()
-    }
-
     fun prepare() {
         viewModelScope.launch {
             if (musicDataList.isEmpty()) {
-                exoPlayerManager.addListener(
-                    object : Player.Listener {
-                        override fun onIsPlayingChanged(isPlaying: Boolean) {
-                            super.onIsPlayingChanged(isPlaying)
-
-                            if (isPlaying)
-                                _isPlayingState.value = true
-                        }
-                    }
-                )
+                exoPlayerManager.addListener(isPlayingListener)
 
                 val dataList = musicDataDao.getAll().sortedWith(
                     compareBy(Collator.getInstance(Locale.getDefault())) { musicData ->
@@ -106,6 +98,7 @@ class PlayerViewModel @Inject constructor(
     }
 
     fun release() {
+        exoPlayerManager.removeListener(isPlayingListener)
         exoPlayerManager.release()
     }
 

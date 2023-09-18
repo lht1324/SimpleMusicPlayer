@@ -9,7 +9,7 @@ import com.overeasy.simplemusicplayer.scenario.main.player.PlayerScreen
 import com.overeasy.simplemusicplayer.scenario.main.setting.SettingScreen
 
 @Composable
-fun RootNavHost(
+fun MainNavHost(
     navController: NavHostController
 ) {
     NavHost(
